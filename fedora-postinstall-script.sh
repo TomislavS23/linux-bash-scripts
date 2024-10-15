@@ -23,10 +23,6 @@ docker_commands=(
     "sudo systemctl start docker"
     "sudo systemctl enable docker"
     "sudo docker run hello-world"
-)
-
-fix_permissions=(
-    # Permissions
     "sudo usermod -a -G docker $USER"
     "grep docker /etc/group"
 )
@@ -44,19 +40,42 @@ execute_commands() {
 
         sleep 3
 
-        echo "------------------------- END OF PREVIOUS COMMAND ------------------------"
-        echo "--------------------------------------------------------------------------"
-        echo "--------------------------- NEXT COMMAND ---------------------------------"
+        echo ""
+        echo "[------------------------- END OF PREVIOUS COMMAND -----------------------]"
+        echo "[-------------------------------------------------------------------------]"
+        echo "[------------------------------ NEXT COMMAND -----------------------------]"
+        echo ""
     done
 }
 
-# SCRIPT EXECUTION
-execute_commands "${basic_commands[@]}"
-execute_commands "${vscode[@]}"
-execute_commands "${docker_commands[@]}"
-execute_commands "${fix_permissions[@]}"
+printMenu(){
+    clear
 
-# EXIT
-echo "All commands executed."
-echo "Press any key to quit..."
-read -n 1 -s
+    echo "Please choose one of the available options in this script:"
+    echo "---------------------------------------------------------------------"
+    echo "|     [1] Execute basic commands post-install commands.             |"
+    echo "|     [2] Install VSCode (microsoft).                               |"
+    echo "|     [3] Install docker and fix user permissions.                  |"
+    echo "|     [4] Exit.                                                     |"
+    echo "---------------------------------------------------------------------"
+}
+
+
+
+while true; do
+    printMenu
+
+    read option
+    clear
+
+    case $option in
+    1) execute_commands "${basic_commands[@]}";;
+    2) execute_commands "${vscode[@]}";;
+    3) execute_commands "${docker_commands[@]}";;
+    4) exit 0;;
+    *) echo "Wrong number, please try again."
+    esac
+
+    echo "Press any key to continue..."
+    read -n 1 -s
+done
