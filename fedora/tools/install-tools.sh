@@ -1,22 +1,29 @@
+#!/usr/bin/env bash
+
+set -e
+trap "echo 'An error occurred. Exiting...'; exit 1" ERR
+
 # VARIABLES
-basic_commands=(
-	# Basic
+
+# Complete set of basic commands that can be executed post-installation on Fedora.
+readonly basic_commands=(
     "sudo dnf upgrade"
     "sudo dnf remove firefox gnome-contacts gnome-weather gnome-maps"
     "flatpak install flathub org.mozilla.firefox"
     "sudo dnf install @virtualization"
 )
 
-vscode=(
-    # VSCode
+# Complete set of commands needed to install VSCode on Fedora.
+readonly vscode=(
     "sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc"
     'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null'
     "sudo dnf upgrade"
     "sudo dnf install code"
 )
 
-docker_commands=(
-    # Docker
+# Complete set of commands needed to install and configure Docker.
+# This set also adds user to docker group (needed to run docker commands in terminal).
+readonly docker_commands=(
     "sudo dnf -y install dnf-plugins-core"
     "sudo dnf-3 config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo"
     "sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
@@ -28,10 +35,13 @@ docker_commands=(
 )
 
 # SCRIPT
+
+# Function recieves one of the specified arrays and loops through it, executing commands.
 execute_commands() {
     local commands=("$@")
     for cmd in "${commands[@]}"; do
         if ! eval "$cmd"; then
+            echo
             echo "Command failed: $cmd"
             echo "Press any key to quit..."
             read -n 1 -s
@@ -60,8 +70,7 @@ printMenu(){
     echo "---------------------------------------------------------------------"
 }
 
-
-
+# MAIN
 while true; do
     printMenu
 
@@ -76,6 +85,7 @@ while true; do
     *) echo "Wrong number, please try again."
     esac
 
+    echo
     echo "Press any key to continue..."
     read -n 1 -s
 done
